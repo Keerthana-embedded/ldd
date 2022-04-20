@@ -1,0 +1,127 @@
+1] what is major no and minor no?
+a: when application wants to communicate with devices it opens reads and writes device files and finds correct driver to communicate with hardware
+-connection between the device file and driver is based on no of device file
+-a device number consists of 2 parts
+major no-identifies device type[serial port,usb,ide disk etc]
+minor no-identifies the device [first disk,2nd serial port etc]
+-major no identifies driver and minor identifies each physicl device served by the driver
+
+2]how to check whether device is created or not?
+a:lsmod command shows whether device driver is loaded for particular hardware
+ 
+3]how to check major and minor no associated with module?
+a:-ls -l /dev/ttyS* gives major and minor no
+-/proc/devices to find major no and minor no
+ 
+4]why we use __init?
+a:since  built in driver cannot be unloaded its init function will be called again and again ubtil next reboot so no need to keep its references to its init function
+__init macro is a technique when used with function the kernel will free the code memory of function  after its execution
+
+5]what is magic number?
+a:it is unique no or charector that will differenciate our set of ioctl calls from other calls sometimes major no is used for device
+
+6]what is the use of __exit function?
+a:__exit is a macro with cleanup function the kernel build system will exclude those functions during build process itself
+
+7]what is atomic and how to define it?
+a: the read,write and perform arthematic operations on atomic variables will be done in one instruction without interrupt
+while creating the global vriable locking mechanism will be applied when we are using variable
+atomic_t etx_global_variable=ATOMIC_INIT(0)
+
+8]which layer is responsible for communication between user space and kernel space?
+a:VFS layer(virtual file system) i.e.;driver should get registered in VFS API
+
+9]in which file system, we can modify variables at runtime?
+a:/proc/sys
+to modify runtime parametreswe use sysctl command 
+
+10]can we perform bitwise operations using atomic variables?
+a:yes we must use <asm/bitops.h> header file
+
+11]how to set value using atomic operations what are the parametres to be passed?
+a:void atomic_set(atomic_t *v,int i);
+v=the pointer of type atomic
+i=value to be set to v
+
+12]how to create device node statically?
+a:int init_module(void)
+{
+
+major=registeer_chrdev(0,DEVICE_NAME,&fops);
+
+13]what is the range of major and  minor no?
+a:minor no range- 0 to 255
+major no range- 0 to 255
+ 
+14]what is use of dev_t type?
+a:in linux kernel dev_t (typedef of 32-bit) type is used to represent the device number
+out of 32-bit, 12 bits to store major no and 20 bits to store minor no
+
+15]what is disadvantage of dynamic device no assignment?
+a:we cant create device nodes in advance because major no assigned to our module cant be guarenteed to always be the same. this means that you wont be able 
+to use loading on demand of your driver
+
+16]diff between printk and printf?
+a:Printk()
+
+Printf()
+
+printk() is a kernel-level function that may print to a variety of log levels, as described in Linux<kernel.h>
+printf() will always print to an STD OUT file descriptor.
+
+printk() is not a Standard Library Function.	
+printf() is a C Standard Library function.
+
+printk() is used by the kernel to print.	
+To print something from the application layer it uses printf().
+
+The printk() method can be called at any time from almost anywhere in the kernel.	
+The printf() method is not so robust.
+
+It’s useless until a specific point during the kernel startup process, before the console is initialized.	
+Unlike printk() it is always ready as the system is in the ready state to execute it terminally.
+
+17]where the module parametres macro creates the sub-directory?
+a:/sys/module
+
+18]how many ways we can assign major and minor no to any devices?
+a:static-register_chrdev_region(dev_t first,unsigned int count,char *name);
+dynamic-alloc_chrdev_region(dev_t *dev,unsigned int firstminor,unsigned int count,char *name);
+
+19]what is ioctl how it is used in kernel driver code?
+a:it is reffered as i/p and o/p control used to talk to device drivers
+it is used for special operations in device file ioctl which are vendor specific
+ioctl will allow 256 operations in single ioctl
+
+20]what is mutex?how to implement?
+a:The mutex class is a synchronization primitive that can be used to protect shared data from being simultaneously accessed by multiple threads. 
+implementation
+A mutex is the starting point for a critical section, which uses a mutex internally to see if it can enter a section of code.
+ If the mutex is free,the mutex and executes the code, only to release the mutex when done.
+ When a critical section notices that a mutex is locked, it can wait for the mutex to be released.
+
+21]how to make module as loadable ?
+a:edit /etc/modulers or put new config file in /etc/modules-load. d/ directory 
+
+22]what are spin locks?are they better than mutex?
+a:Spinlock is a locking system mechanism. 
+It allows a thread to acquire it to imply wait in loop until the lock is available i.e. a thread waits in a loop or spin until the lock is available
+which are better: 
+ use mutexes, they are usually the better choice and most modern systems will allow them to spinlock for a very short amount of time, if this seems beneficial.
+
+23]can thread acquire more than one lock?
+a:Yes, it is possible that a thread is in need of more than one resource, hence the locks. If any lock is not available the thread will wait (block) on the lock
+
+24]can mutex be locked more than once?
+a:A mutex is a lock. Only one state (locked/unlocked) is associated with it.
+However, a recursive mutex can be locked more than once(POSIX compliant systems), in which a count is associated with it, yet retains only one state (locked/unlocked).
+
+25]what will happen if a non-recursive mutex is locked more than once?
+a: Deadlock. If a thread that had already locked a mutex, tries to lock the mutex again, it will enter into the waiting list of that mutex, which results in a deadlock
+
+26]why do we need syncronization mechanism in kernel?
+a:The main purpose of synchronization is the sharing of resources without interference using mutual exclusion
+
+
+
+
